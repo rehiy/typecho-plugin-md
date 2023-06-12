@@ -1,8 +1,8 @@
 <?php
 
-require_once 'ParsedownExtra.php';
+require_once __DIR__ . '/ParsedownExtra.php';
 
-class ParsedownExtension extends ParsedownExtra
+class ParsedownExtraTOC extends ParsedownExtra
 {
     protected $findTocSyntaxRule     = '/^<p>\s*\[TOC\]\s*<\/p>$/m';
     protected $originalBlockRuleList = ['$' => '/\${1,2}[^`]*?\${1,2}/m'];

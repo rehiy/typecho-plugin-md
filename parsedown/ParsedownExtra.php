@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Parsedown.php';
-
 #
 #
 # Parsedown Extra
@@ -14,6 +12,8 @@ require_once 'Parsedown.php';
 # with this source code.
 #
 #
+
+require_once __DIR__ . '/Parsedown.php';
 
 class ParsedownExtra extends Parsedown
 {
@@ -29,8 +29,8 @@ class ParsedownExtra extends Parsedown
             throw new Exception('ParsedownExtra requires a later version of Parsedown');
         }
 
-        $this->BlockTypes[':'] [] = 'DefinitionList';
-        $this->BlockTypes['*'] [] = 'Abbreviation';
+        $this->BlockTypes[':'][] = 'DefinitionList';
+        $this->BlockTypes['*'][] = 'Abbreviation';
 
         # identify footnote definitions before reference definitions
         array_unshift($this->BlockTypes['['], 'Footnote');
@@ -150,7 +150,7 @@ class ParsedownExtra extends Parsedown
         $terms = explode("\n", $Block['element']['handler']['argument']);
 
         foreach ($terms as $term) {
-            $Element['elements'] [] = [
+            $Element['elements'][] = [
                 'name'    => 'dt',
                 'handler' => [
                     'function'    => 'lineElements',
@@ -457,7 +457,7 @@ class ParsedownExtra extends Parsedown
             unset($Block['interrupted']);
         }
 
-        $Block['element']['elements'] [] = &$Block['dd'];
+        $Block['element']['elements'][] = &$Block['dd'];
 
         return $Block;
     }
@@ -537,7 +537,7 @@ class ParsedownExtra extends Parsedown
                 ];
             }
 
-            $Element['elements'][1]['elements'] [] = [
+            $Element['elements'][1]['elements'][] = [
                 'name'       => 'li',
                 'attributes' => ['id' => 'fn:' . $definitionId],
                 'elements'   => array_merge(
@@ -562,7 +562,7 @@ class ParsedownExtra extends Parsedown
                 $Data['id'] = substr($attribute, 1);
             } else # "."
             {
-                $classes [] = substr($attribute, 1);
+                $classes[] = substr($attribute, 1);
             }
         }
 

@@ -3,15 +3,15 @@
 /**
  * 更快、更全的 Markdown 解析插件
  *
- * @author  mrgeneral
- * @package MarkdownParse
- * @version 1.4.4
- * @link    https://www.chengxiaobai.cn
+ * @package Markdown
+ * @author 若海
+ * @version 1.0.0
+ * @link http://www.rehiy.com
  */
 
-require_once 'ParsedownExtension.php';
+require_once __DIR__ . '/parsedown/ParsedownExtraTOC.php';
 
-class MarkdownParse_Plugin implements Typecho_Plugin_Interface
+class Markdown_Plugin implements Typecho_Plugin_Interface
 {
     const RADIO_VALUE_DISABLE = 0;
     const RADIO_VALUE_AUTO    = 1;
@@ -56,11 +56,8 @@ class MarkdownParse_Plugin implements Typecho_Plugin_Interface
         $elementMathJax = new Typecho_Widget_Helper_Form_Element_Radio('is_available_mathjax', [self::RADIO_VALUE_DISABLE => _t('不开启'), self::RADIO_VALUE_AUTO => _t('开启（按需加载）'), self::RADIO_VALUE_FORCE => _t('开启（每次加载，pjax 主题建议选择此选项）')], self::RADIO_VALUE_AUTO, _t('是否开启 MathJax 支持（支持自动识别，按需渲染，无需担心引入冗余资源）'), _t('开启后支持解析并渲染 <a href="https://www.mathjax.org/">MathJax</a>'));
         $form->addInput($elementMathJax);
 
-        $elementCDNSource = new Typecho_Widget_Helper_Form_Element_Radio('cdn_source', array_combine(array_keys(self::CDN_SOURCE_MERMAID), array_map('_t', array_keys(self::CDN_SOURCE_MERMAID))), self::CDN_SOURCE_DEFAULT);
+        $elementCDNSource = new Typecho_Widget_Helper_Form_Element_Radio('cdn_source', array_combine(array_keys(self::CDN_SOURCE_MERMAID), array_map('_t', array_keys(self::CDN_SOURCE_MERMAID))), self::CDN_SOURCE_DEFAULT, _t('Mermaid 和 MathJax 的 CDN 源'), _t('国内用户可以选择bytedance 或 bootcdn'));
         $form->addInput($elementCDNSource);
-
-        $elementHelper = new Typecho_Widget_Helper_Form_Element_Radio('show_help_info', [], self::RADIO_VALUE_DISABLE, _t('<a href="https://www.chengxiaobai.cn/php/markdown-parser-library.html/">点击查看更新信息</a>'), _t('<a href="https://www.chengxiaobai.cn/record/markdown-concise-grammar-manual.html/">点击查看语法手册</a>'));
-        $form->addInput($elementHelper);
     }
 
     public static function personalConfig(Typecho_Widget_Helper_Form $form)
@@ -70,20 +67,20 @@ class MarkdownParse_Plugin implements Typecho_Plugin_Interface
 
     public static function parse($text)
     {
-        $markdownParser              = ParsedownExtension::instance();
-        $markdownParser->isTocEnable = (bool)Helper::options()->plugin('MarkdownParse')->is_available_toc;
+        $mdParser              = ParsedownExtraTOC::instance();
+        $mdParser->isTocEnable = (bool)Helper::options()->plugin('Markdown')->is_available_toc;
 
-        return $markdownParser->setBreaksEnabled(true)->text($text);
+        return $mdParser->setBreaksEnabled(true)->text($text);
     }
 
     public static function resourceLink()
     {
-        $configMermaid      = (int) Helper::options()->plugin('MarkdownParse')->is_available_mermaid;
-        $configLaTex        = (int) Helper::options()->plugin('MarkdownParse')->is_available_mathjax;
-        $configCDN          = (string) Helper::options()->plugin('MarkdownParse')->cdn_source;
-        $markdownParser     = ParsedownExtension::instance();
-        $isAvailableMermaid = $configMermaid === self::RADIO_VALUE_FORCE || ($markdownParser->isNeedMermaid && $configMermaid === self::RADIO_VALUE_AUTO);
-        $isAvailableMathjax = $configLaTex === self::RADIO_VALUE_FORCE || ($markdownParser->isNeedLaTex && $configLaTex === self::RADIO_VALUE_AUTO);
+        $configMermaid      = (int) Helper::options()->plugin('Markdown')->is_available_mermaid;
+        $configLaTex        = (int) Helper::options()->plugin('Markdown')->is_available_mathjax;
+        $configCDN          = (string) Helper::options()->plugin('Markdown')->cdn_source;
+        $mdParser     = ParsedownExtraTOC::instance();
+        $isAvailableMermaid = $configMermaid === self::RADIO_VALUE_FORCE || ($mdParser->isNeedMermaid && $configMermaid === self::RADIO_VALUE_AUTO);
+        $isAvailableMathjax = $configLaTex === self::RADIO_VALUE_FORCE || ($mdParser->isNeedLaTex && $configLaTex === self::RADIO_VALUE_AUTO);
 
         $resourceContent = '';
 
